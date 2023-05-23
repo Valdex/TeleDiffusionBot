@@ -1,17 +1,38 @@
-# Use an official Python runtime as a parent image
-FROM python:3.9-slim-buster
+FROM python:3.10-bullseye
 
-# Set the working directory in the container to /app
-WORKDIR /app
+ENV PYTHONUNBUFFERED 1
+RUN apt-get update && apt-get install -y \
+  build-essential \
+  libcairo2-dev \
+  cargo \
+  libfreetype6-dev \
+  gcc \
+  libgdk-pixbuf2.0-dev \
+  gettext \
+  libjpeg-dev \
+  liblcms2-dev \
+  libffi-dev \
+  musl-dev \
+  libopenjp2-7-dev \
+  libssl-dev \
+  libpango1.0-dev \
+  poppler-utils \
+  postgresql-client \
+  libpq-dev \
+  python3-dev \
+  rustc \
+  tcl-dev \
+  libtiff5-dev \
+  tk-dev \
+  zlib1g-dev
 
-# Add current directory code to /app in the container
-ADD . /app
+RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
+ENV PATH="/root/.cargo/bin:${PATH}"
+RUN rustup update
 
-# Install any needed packages specified in requirements.txt
+RUN pip3 install cryptography
+COPY ./ /TelegramBot
+WORKDIR /TelegramBot
 RUN pip3 install -r requirements.txt
 
-# Make port 80 available to the world outside this container
-EXPOSE 80
-
-# Run the application when the container launches
 CMD ["python3", "main.py"]
