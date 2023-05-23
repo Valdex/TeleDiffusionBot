@@ -16,5 +16,5 @@ RUN pip3 install -r requirements.txt
 EXPOSE 80
 
 # Run the application when the container launches
-CMD ["python3", "-m", "main"]
+CMD ["python3", "main"]
 
