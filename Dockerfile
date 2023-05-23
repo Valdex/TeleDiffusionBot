@@ -7,14 +7,11 @@ WORKDIR /app
 # Add current directory code to /app in the container
 ADD . /app
 
-RUN pip3 install -r requirements.txt
-
 # Install any needed packages specified in requirements.txt
-# RUN pip install --no-cache-dir -r requirements.txt
+RUN pip3 install -r requirements.txt
 
 # Make port 80 available to the world outside this container
 EXPOSE 80
 
 # Run the application when the container launches
 CMD ["python3", "main"]
-
