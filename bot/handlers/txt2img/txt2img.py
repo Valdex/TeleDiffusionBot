@@ -13,7 +13,7 @@ from bot.utils.errorable_command import wrap_exception
 
 
 @wrap_exception([ValueError], custom_loading=True)
-@throttle(cooldown=30, admin_ids=db[DBTables.config].get('admins'))
+@throttle(cooldown=10, admin_ids=db[DBTables.config].get('admins')) # should be in config
 async def generate_command(message: types.Message):
     temp_message = await message.reply("⏳ Enqueued...")
     if not db[DBTables.config].get('enabled'):

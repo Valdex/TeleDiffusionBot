@@ -4,12 +4,12 @@ import dataclasses
 @dataclasses.dataclass
 class Prompt:
     prompt: str
-    negative_prompt: str = None
-    steps: int = 20
-    cfg_scale: int = 7
-    width: int = 768
-    height: int = 768
-    restore_faces: bool = True
+    negative_prompt: str = "blurry, ugly, low details, low quality, off-center character, out of frame"
+    steps: int = 25
+    cfg_scale: int = 3
+    width: int = 512
+    height: int = 512
+    restore_faces: bool = False
     sampler: str = "Euler a"
     creator: int = None
 

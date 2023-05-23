@@ -1,8 +1,10 @@
 from bot.common import dp
 from bot.db import db, DBTables
 from aiogram import types
-from .factories.image_info import full_prompt, prompt_only, import_prompt, back
+from aiogram.types import Message
+from .factories.image_info import full_prompt, prompt_only, regenerate, import_prompt, back
 from bot.keyboards.image_info import get_img_info_keyboard, get_img_back_keyboard
+from bot.handlers.txt2img.txt2img import generate_command
 from bot.utils.cooldown import throttle
 from bot.utils.private_keyboard import other_user
 from bot.modules.api.objects.prompt_request import Generated
@@ -65,6 +67,29 @@ async def on_full_info(call: types.CallbackQuery, callback_data: dict):
 
 @wrap_exception()
 @throttle(5)
+async def on_regenerate(call: types.CallbackQuery, callback_data: dict):
+    p_id = callback_data['p_id']
+    if await other_user(call):
+        return
+
+    prompt: Generated = db[DBTables.generated].get(p_id)
+
+    regenerate_message = Message(
+        message_id=call.message.message_id,
+        from_user=call.from_user,
+        chat=call.message.chat,
+        date=call.message.date,
+        text=call.message.text,
+        entities=call.message.entities,
+        caption_entities=call.message.caption_entities,
+        reply_markup=call.message.reply_markup,
+        args=prompt.prompt.prompt
+    )
+
+    await generate_command(regenerate_message)
+
+@wrap_exception()
+@throttle(5)
 async def on_import(call: types.CallbackQuery, callback_data: dict):
     p_id = callback_data['p_id']
     if await other_user(call):
@@ -86,4 +111,5 @@ def register():
     dp.register_callback_query_handler(on_prompt_only, prompt_only.filter())
     dp.register_callback_query_handler(on_back, back.filter())
     dp.register_callback_query_handler(on_full_info, full_prompt.filter())
+    dp.register_callback_query_handler(on_regenerate, regenerate.filter())
     dp.register_callback_query_handler(on_import, import_prompt.filter())
